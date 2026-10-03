@@ -121,7 +121,7 @@ than the attention span alone.
 ## Comparing a fresh run
 
 ```bash
-uv run python scripts/eval_replica.py \
+uv run python scripts/eval.py --dataset replica \
     --config configs/eval/replica_segvggt.yaml \
     --output_dir /tmp/myrun
 python - <<'PY'

@@ -26,7 +26,7 @@ uv sync
 resolved versions. Run commands with `uv run`, which needs no activation:
 
 ```bash
-uv run python scripts/eval_replica.py --help
+uv run python scripts/eval.py --help
 ```
 
 ### Extras

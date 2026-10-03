@@ -57,12 +57,12 @@ uv run pytest -q
 
 ```bash
 # Replica (indoor), one config per model
-uv run python scripts/eval_replica.py --config configs/eval/replica_lgv2.yaml
-uv run python scripts/eval_replica.py --config configs/eval/replica_segvggt.yaml
-uv run python scripts/eval_replica.py --config configs/eval/replica_segvggt_joint.yaml
+uv run python scripts/eval.py --dataset replica --config configs/eval/replica_lgv2.yaml
+uv run python scripts/eval.py --dataset replica --config configs/eval/replica_segvggt.yaml
+uv run python scripts/eval.py --dataset replica --config configs/eval/replica_segvggt_joint.yaml
 
 # Virtual KITTI 2 (outdoor)
-uv run python scripts/eval_vkitti2.py --config configs/eval/vkitti2_lgv2.yaml
+uv run python scripts/eval.py --dataset vkitti2 --config configs/eval/vkitti2_lgv2.yaml
 
 # useful flags
 #   --num_pairs 40      smoke test on a prefix of the pair list
@@ -141,6 +141,32 @@ Two things to know before you retrain:
 * **MASt3R descriptors are only valid per pair**, because its decoder
   cross-attends between the two views. Per-image precompute is therefore
   unsupported; SegVGGT-DPT always runs its backbone online.
+
+## Inference on your own frames
+
+For a sequence with no annotations, FastSAM supplies the segment proposals and the
+joint model links them across a sliding window of N frames:
+
+```bash
+uv sync --extra eval                     # ultralytics, for FastSAM
+uv run python scripts/inference.py \
+    --frames path/to/frames --out out/run1 \
+    --n 4 --stride 2 --batch 4 --save-overlays
+```
+
+Writes `summary.json` (settings, timings, track statistics), `tracks.json`
+(`{frame: {segment: track_id}}`), `masks.pt` (so a re-render needs no
+re-segmentation) and, with `--save-overlays`, a coloured overlay per frame where
+each colour is one track.
+
+Useful flags: `--max-frames` and `--every` to subsample a long sequence, `--masks`
+to reuse a previous run's proposals, `--n 6` for a wider joint window,
+`--min-track-len` to hide short tracks in the overlays.
+
+Tracks come from a constrained union-find over accepted matches: edges are
+consumed in descending score order and a track may never contain two segments
+from the same frame. See [`demo/README.md`](demo/README.md) for a worked example
+on a recorded robot trajectory, with measured latency.
 
 ## Using the model from Python
 
@@ -262,6 +288,7 @@ third_party/        pinned external checkouts (populated by setup_third_party.sh
 | [checkpoints.md](docs/checkpoints.md) | what to download and from where |
 | [reproduction.md](docs/reproduction.md) | **what reproduces, what does not, and why** |
 | [publishing_checkpoints.md](docs/publishing_checkpoints.md) | for maintainers |
+| [release_checklist.md](docs/release_checklist.md) | how each step was verified, and what is still open |
 
 ## License
 
