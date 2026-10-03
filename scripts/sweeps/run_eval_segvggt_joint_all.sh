@@ -16,7 +16,7 @@ for N in 2 4 6 8; do
     cfg="$TMP/${ds}_N${N}.yaml"
     sed "s|^\( *N_FRAMES: *\).*|\1$N|" "$src" > "$cfg"
     echo "==> $ds / N=$N"
-    $PY "scripts/eval_${ds}.py" --config "$cfg" --output_dir "$OUT/N${N}_${ds}" \
+    $PY scripts/eval.py --dataset "$ds" --config "$cfg" --output_dir "$OUT/N${N}_${ds}" \
       2>&1 | tee "$OUT/N${N}_${ds}.log" | tail -2
   done
 done

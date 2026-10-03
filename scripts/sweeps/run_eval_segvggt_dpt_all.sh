@@ -19,7 +19,7 @@ for name in "${CKPTS[@]}"; do
     cfg="$TMP/${ds}_${name}.yaml"
     sed "s|^\( *CHECKPOINT: *\).*|\1$CKPT_DIR/$name.pth|" "$src" > "$cfg"
     echo "==> $ds / $name"
-    $PY "scripts/eval_${ds}.py" --config "$cfg" --output_dir "$OUT/${name}_${ds}" \
+    $PY scripts/eval.py --dataset "$ds" --config "$cfg" --output_dir "$OUT/${name}_${ds}" \
       2>&1 | tee "$OUT/${name}_${ds}.log" | tail -2
   done
 done
