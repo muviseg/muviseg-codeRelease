@@ -17,7 +17,7 @@ import hashlib
 import sys
 from pathlib import Path
 
-REPO_ID = "muviseg/muviseg"
+REPO_ID = "MuViSeg/muviseg"
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 # name -> (path in the HF repo, local path, md5, role)

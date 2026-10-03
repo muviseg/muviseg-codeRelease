@@ -2,7 +2,7 @@
 
 ## Trained MuViSeg heads
 
-Hosted on the Hugging Face Hub: **[muviseg/muviseg](https://huggingface.co/muviseg/muviseg)**.
+Hosted on the Hugging Face Hub: **[MuViSeg/muviseg](https://huggingface.co/MuViSeg/muviseg)**.
 
 ```bash
 # the three heads used for the main results
@@ -29,7 +29,7 @@ To load one directly instead:
 
 ```python
 from huggingface_hub import hf_hub_download
-path = hf_hub_download("muviseg/muviseg", "segvggt_dpt/v3-001/best.pth")
+path = hf_hub_download("MuViSeg/muviseg", "segvggt_dpt/v3-001/best.pth")
 ```
 
 ### These are head-only checkpoints

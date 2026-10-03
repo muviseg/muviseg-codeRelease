@@ -2,7 +2,7 @@
 
 [![Project page](https://img.shields.io/badge/project-muviseg.github.io-blue)](https://muviseg.github.io)
 [![arXiv](https://img.shields.io/badge/arXiv-2607.17938-b31b1b)](https://arxiv.org/abs/2607.17938)
-[![Checkpoints](https://img.shields.io/badge/%F0%9F%A4%97-checkpoints-yellow)](https://huggingface.co/muviseg/muviseg)
+[![Checkpoints](https://img.shields.io/badge/%F0%9F%A4%97-checkpoints-yellow)](https://huggingface.co/MuViSeg/muviseg)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 Official code release for the ACCV 2026 paper.
@@ -17,7 +17,7 @@ matcher) predicts the assignment, including a dustbin for unmatched segments.
 ## Install
 
 ```bash
-git clone https://github.com/muviseg/muviseg-codeRelease.git
+git clone https://github.com/MuViSeg/muviseg-codeRelease.git
 cd muviseg-codeRelease
 uv sync                                  # pinned env: Python 3.11, torch 2.10.0+cu128
 bash setup_third_party.sh                # pinned MASt3R/SegMASt3R and VGGT checkouts

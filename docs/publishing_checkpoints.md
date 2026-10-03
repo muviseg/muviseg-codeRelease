@@ -38,9 +38,9 @@ environment.
 
 ```bash
 uv run hf auth login                                   # paste a WRITE token
-uv run hf repos create muviseg/muviseg --type model     # omit if it exists
-uv run hf upload muviseg/muviseg upload/ . --type model
-uv run hf repos tag create muviseg/muviseg v1.0.0 --type model
+uv run hf repos create MuViSeg/muviseg --type model     # omit if it exists
+uv run hf upload MuViSeg/muviseg upload/ . --type model
+uv run hf repos tag create MuViSeg/muviseg v1.0.0 --type model
 ```
 
 `hf upload` takes `REPO_ID [LOCAL_PATH] [PATH_IN_REPO]`, splits large folders over
@@ -71,7 +71,7 @@ library_name: pytorch
 Trained heads for **MuViSeg: Multi-View Segment Correspondences from Dense
 Geometry Priors** (ACCV 2026).
 
-- Code: https://github.com/muviseg/muviseg-codeRelease
+- Code: https://github.com/MuViSeg/muviseg-codeRelease
 - Project page: https://muviseg.github.io
 - Paper: https://arxiv.org/abs/2607.17938
 
@@ -93,7 +93,7 @@ The single-layer row in the paper uses `best.pth` on Replica and
 ## Usage
 
 ```bash
-git clone https://github.com/muviseg/muviseg-codeRelease.git
+git clone https://github.com/MuViSeg/muviseg-codeRelease.git
 cd muviseg-codeRelease && uv sync && bash setup_third_party.sh
 uv run python scripts/download_checkpoints.py --all --verify
 ```

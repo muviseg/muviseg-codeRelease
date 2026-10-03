@@ -17,7 +17,7 @@ Training uses bf16 mixed precision, which needs compute capability 8.0 or newer
 ## Install
 
 ```bash
-git clone https://github.com/muviseg/muviseg-codeRelease.git
+git clone https://github.com/MuViSeg/muviseg-codeRelease.git
 cd muviseg-codeRelease
 uv sync
 ```
