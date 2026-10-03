@@ -20,6 +20,41 @@ from muviseg.training.utils import (
 from muviseg.training.validator import run_validation
 
 
+def _seed_everything(seed: int) -> "torch.Generator":
+    """Seed every RNG the training loop draws from, and return a loader generator.
+
+    Covers what the original code left unseeded: weight initialisation, batch
+    order, and -- via the worker_init_fn below -- the `random` module that
+    ScanNetPPSegDataset/ScanNetPPTupleDataset use inside __getitem__.
+
+    TF32 stays enabled and cuDNN autotuning is untouched, so results are
+    repeatable on the same hardware and software stack but not necessarily
+    across different ones.
+    """
+    import random as _random
+
+    import numpy as _np
+
+    _random.seed(seed)
+    _np.random.seed(seed % (2 ** 32))
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    gen = torch.Generator()
+    gen.manual_seed(seed)
+    return gen
+
+
+def _worker_init_fn(worker_id: int) -> None:
+    """Give each dataloader worker a distinct, reproducible RNG state."""
+    import random as _random
+
+    import numpy as _np
+
+    base = torch.initial_seed() % (2 ** 31)
+    _random.seed(base + worker_id)
+    _np.random.seed((base + worker_id) % (2 ** 32))
+
+
 def build_lr_scheduler(optimizer, cfg, total_steps: int):
     warmup = cfg.TRAINING.WARMUP_STEPS
     sched  = cfg.TRAINING.LR_SCHEDULER
@@ -70,8 +105,30 @@ def train_step_multiframe(model, batch, device, loss_fn):
     return loss, output
 
 
+def _run_provenance(cfg=None) -> dict:
+    """What produced this checkpoint: seed, command line, code version.
+
+    None of this was recorded before, so a released checkpoint could not be
+    traced back to the run that made it.
+    """
+    import subprocess
+    import sys
+
+    info = {"argv": sys.argv, "torch": torch.__version__}
+    if cfg is not None:
+        info["seed"] = int(getattr(cfg.TRAINING, "SEED", 42))
+        info["legacy_rng"] = bool(getattr(cfg.TRAINING, "LEGACY_RNG", False))
+    try:
+        info["git_sha"] = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=str(Path(__file__).resolve().parents[2]),
+            stderr=subprocess.DEVNULL, text=True).strip()
+    except Exception:
+        info["git_sha"] = None
+    return info
+
+
 def _save_ckpt(path, model, optimizer, scheduler, epoch, global_step,
-               metrics: dict, best_val_ma=None, accelerator=None):
+               metrics: dict, best_val_ma=None, accelerator=None, cfg=None):
     m = accelerator.unwrap_model(model) if accelerator is not None else model
     payload = {
         "epoch":           epoch,
@@ -80,6 +137,7 @@ def _save_ckpt(path, model, optimizer, scheduler, epoch, global_step,
         "optimizer_state": optimizer.state_dict(),
         "scheduler_state": scheduler.state_dict(),
         "metrics":         metrics,
+        "provenance":      _run_provenance(cfg),
     }
     if best_val_ma is not None:
         payload["best_val_ma"] = best_val_ma
@@ -87,6 +145,10 @@ def _save_ckpt(path, model, optimizer, scheduler, epoch, global_step,
 
 
 def train(cfg, mock=False, resume=None):
+    legacy_rng = bool(getattr(cfg.TRAINING, "LEGACY_RNG", False))
+    seed = int(getattr(cfg.TRAINING, "SEED", 42))
+    loader_generator = None if legacy_rng else _seed_everything(seed)
+
     # ── Accelerator ───────────────────────────────────────────────
     mixed_prec = getattr(getattr(cfg, "ACCELERATE", None), "MIXED_PRECISION", "no")
     grad_accum = getattr(getattr(cfg, "ACCELERATE", None), "GRADIENT_ACCUMULATION_STEPS", 1)
@@ -154,6 +216,8 @@ def train(cfg, mock=False, resume=None):
         pin_memory=(accelerator.device.type == "cuda"),
         prefetch_factor=cfg.TRAINING.PREFETCH_FACTOR if not mock else None,
         persistent_workers=(cfg.TRAINING.NUM_WORKERS > 0 and not mock),
+        generator=loader_generator,
+        worker_init_fn=None if legacy_rng else _worker_init_fn,
     )
     loader_val = DataLoader(
         ds_val,
@@ -162,6 +226,7 @@ def train(cfg, mock=False, resume=None):
         num_workers=min(4, cfg.TRAINING.NUM_WORKERS) if not mock else 0,
         collate_fn=collate_fn,
         pin_memory=(accelerator.device.type == "cuda"),
+        worker_init_fn=None if legacy_rng else _worker_init_fn,
     )
 
     # ── Model / loss / metrics ────────────────────────────────────
@@ -906,7 +971,7 @@ def train(cfg, mock=False, resume=None):
                         best_val_ma = vm["matching_accuracy"]
                         _save_ckpt(save_dir / "best.pth", model, optimizer, scheduler,
                                    epoch, global_step, vm, best_val_ma=best_val_ma,
-                                   accelerator=accelerator)
+                                   accelerator=accelerator, cfg=cfg)
                         tqdm.write(f"  → New best  MA={best_val_ma:.3f}")
 
             # ── Periodic checkpoint ───────────────────────────────
@@ -917,7 +982,7 @@ def train(cfg, mock=False, resume=None):
                                model, optimizer, scheduler,
                                epoch, global_step, {"loss": loss.item()},
                                best_val_ma=best_val_ma,
-                               accelerator=accelerator)
+                               accelerator=accelerator, cfg=cfg)
 
         # ── End of epoch ──────────────────────────────────────────
         avg_loss = epoch_loss / iters_per_epoch
@@ -932,7 +997,7 @@ def train(cfg, mock=False, resume=None):
                        model, optimizer, scheduler,
                        epoch + 1, global_step, {"loss": avg_loss},
                        best_val_ma=best_val_ma,
-                       accelerator=accelerator)
+                       accelerator=accelerator, cfg=cfg)
 
     if writer:
         writer.close()

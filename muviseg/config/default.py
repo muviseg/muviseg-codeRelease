@@ -67,6 +67,12 @@ _CN.DATASET.RANDOM_NEIGHBOR_PROB  = 0.2  # probability of random (vs greedy) exp
 # ── Training ──────────────────────────────────────────────────────
 _CN.TRAINING = CN()
 _CN.TRAINING.BATCH_SIZE      = 36
+# Seeding. SEED makes a run repeatable: weight init, batch order and the
+# dataloader workers' RNG all derive from it. LEGACY_RNG restores the
+# original behaviour, in which nothing but the train/val split was seeded;
+# it exists to document that behaviour, not because it reproduces anything.
+_CN.TRAINING.SEED = 42
+_CN.TRAINING.LEGACY_RNG = False
 _CN.TRAINING.NUM_WORKERS     = 8
 _CN.TRAINING.PREFETCH_FACTOR = 2
 _CN.TRAINING.LR              = 1e-4
