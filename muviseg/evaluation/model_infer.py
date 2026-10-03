@@ -43,7 +43,15 @@ def pad_masks_to_batch(masks_list: list, device) -> torch.Tensor:
 
 class MASt3RSegFeatInfer(torch.nn.Module):
     def __init__(self, cfg):
-        # Lazy imports — MASt3R submodule may not be available on all servers
+        # The segmast3r checkout has to be on sys.path before these imports.
+        # The other wrappers in this file get that as a side effect of importing
+        # muviseg.models.*, which calls setup_segmast3r_path() for them; this one
+        # imports the segmast3r tree directly, so it has to ask explicitly.
+        from muviseg.paths import setup_segmast3r_path  # noqa: PLC0415
+
+        setup_segmast3r_path()
+
+        # Lazy imports — the segmast3r checkout may not be set up
         import mast3r_src.mast3r.model as mast3r_model  # noqa: PLC0415
         from src.models.mast3r_segfeat.diff_feature_matcher import featureMatcher  # noqa: PLC0415
         from src.models.mast3r_segfeat.diff_masked_pooling import masked_average_pooling  # noqa: PLC0415
