@@ -43,15 +43,16 @@ from muviseg.evaluation.model_infer import (
     pad_masks_to_batch,
 )
 from muviseg.evaluation.ground_truth_generator import generate_instance_correspondences
+from muviseg.config.paths import resolve_config_paths
 from muviseg.evaluation.eval_metrics import compute_metrics, aggregate_metrics_by_bin, print_table2_format
 from muviseg.evaluation.vis_utils import visualize_match_pair, visualize_match_tuple, visualize_score_heatmap
 
 
 def load_config(config_path: str) -> dict:
-    """Load configuration from YAML file."""
+    """Load a YAML config and resolve its paths against the repository root."""
     with open(config_path, 'r') as f:
         config = yaml.safe_load(f)
-    return config
+    return resolve_config_paths(config)
 
 
 def setup_model(cfg: dict, device: torch.device):

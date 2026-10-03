@@ -36,10 +36,10 @@ FEATURE_MATCHER:
     DUSTBIN_SCORE_INIT: 1.0
 
 DATASET:
-  METADATA_PATH: /home/dennis/nabo-datasets/ScanNet++/scannetpp_processed/all_metadata.npz
-  DATA_ROOT:     /home/dennis/nabo-datasets/ScanNet++/scannetpp_processed
-  SEGDATA_ROOT:  /home/dennis/nabo-datasets/ScanNet++/masks_resize_mast3r
-  PAIRS_ROOT:    /home/dennis/nabo-datasets/ScanNet++/masks_resize_mast3r_res
+  METADATA_PATH: ${MUVISEG_DATA_ROOT}/ScanNet++/scannetpp_processed/all_metadata.npz
+  DATA_ROOT:     ${MUVISEG_DATA_ROOT}/ScanNet++/scannetpp_processed
+  SEGDATA_ROOT:  ${MUVISEG_DATA_ROOT}/ScanNet++/masks_resize_mast3r
+  PAIRS_ROOT:    ${MUVISEG_DATA_ROOT}/ScanNet++/masks_resize_mast3r_res
   HEIGHT: 336
   WIDTH:  512
   RESIZE_MODE: square

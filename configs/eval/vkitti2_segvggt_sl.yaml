@@ -1,5 +1,5 @@
 DATASET:
-  DATA_ROOT: /mnt/vol0/home/dennis/nabo-dataset-mounted/virtual-KITTI-2
+  DATA_ROOT: ${MUVISEG_DATA_ROOT}/VirtualKITTI2
   DATA_SOURCE: VKITTI2
   SCENES: ['Scene01', 'Scene02', 'Scene06', 'Scene18', 'Scene20']
   VARIANTS: ['clone', '15-deg-left', '30-deg-right', 'sunset']
@@ -10,7 +10,7 @@ DATASET:
   M_PRIME: 50
 
 EVAL:
-  PAIRS_FILE: pairs_vkitti2_4000.json
+  PAIRS_FILE: assets/pairs/pairs_vkitti2.json
   POSE_BINS: [[0, 20], [20, 40], [40, 60], [60, 90]]
   BATCH_SIZE: 1
   NUM_WORKERS: 4
@@ -18,8 +18,8 @@ EVAL:
 
 MODEL:
   ARCH: segvggt
-  CHECKPOINT: ../results/segvggt/step_0140000.pth
-  VGGT_CKPT: ../third_party/vggt_weights.pt
+  CHECKPOINT: results/segvggt/step_0140000.pth
+  VGGT_CKPT: third_party/vggt_weights.pt
   LAYER_IDX: 23
   PROJ_DIM: 128
   PROJ_MID_DIM: 256

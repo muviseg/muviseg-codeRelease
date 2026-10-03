@@ -1,5 +1,5 @@
 DATASET:
-  DATA_ROOT: /mnt/vol0/home/dennis/nabo-dataset-mounted/semantic-replica
+  DATA_ROOT: ${MUVISEG_DATA_ROOT}/Replica
   DATA_SOURCE: Replica
   SCENES: ['office_0', 'office_1', 'office_2', 'office_3', 'office_4',
            'room_0', 'room_1', 'room_2']
@@ -9,10 +9,9 @@ DATASET:
   RESIZE_H: 336
   RESIZE_W: 512
   M_PRIME: 50  # Max number of masks to keep per image
-  INSTANCE_MASK_ROOT: /mnt/vol0/home/dennis/nabo-dataset-mounted/semantic-replica/Replica_Instance_Segmentation
-
+  INSTANCE_MASK_ROOT: ${MUVISEG_DATA_ROOT}/Replica/Replica_Instance_Segmentation
 EVAL:
-  PAIRS_FILE: pairs_replica_3200.json
+  PAIRS_FILE: assets/pairs/pairs_replica.json
   POSE_BINS: [[0, 45], [45, 90], [90, 135], [135, 180]]
   BATCH_SIZE: 1
   NUM_WORKERS: 4

@@ -295,6 +295,14 @@ class SegVGGT(nn.Module):
 
         if os.path.isfile(ckpt_path):
             state = torch.load(ckpt_path, map_location=device, weights_only=True)
+        elif os.sep in ckpt_path or ckpt_path.endswith((".pt", ".pth")):
+            # A filesystem path that is simply absent. Say so, instead of handing
+            # it to the Hub, which reports a confusing repo-id validation error.
+            raise FileNotFoundError(
+                f"VGGT backbone checkpoint not found: {ckpt_path}\n"
+                f"Run `bash setup_third_party.sh`, or set MODEL.VGGT_CKPT to a "
+                f"Hugging Face repo id such as 'facebook/VGGT-1B'."
+            )
         else:
             from huggingface_hub import hf_hub_download
             local = hf_hub_download(repo_id=ckpt_path, filename="model.pt")
