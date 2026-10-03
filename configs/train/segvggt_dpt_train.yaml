@@ -1,0 +1,61 @@
+# SegVGGT-DPT training config — DPT-inspired multi-layer fusion + LightGlue matcher.
+#
+# Online mode only (DPT fusion needs spatial features before pooling).
+# For precomputed single-layer mode, use segvggt_train.yaml with ARCH: vggt.
+#
+# Usage:
+#   accelerate launch -m training.train --config training/config/segvggt_dpt_train.yaml
+
+MODEL:
+  ARCH: vggt_dpt
+  VGGT_CKPT: third_party/vggt_weights.pt
+  VGGT_LAYER_INDICES: [5, 11, 17, 23]    # Aggregator layers for DPT fusion (deep→shallow)
+  VGGT_FUSION_DIM: 256                    # D_hat — per-layer projection + fusion output dim
+  LG:
+    PROJ_DIM:         128
+    N_LAYERS:         3
+    N_HEADS:          4
+    GRAD_CHECKPOINT:  false
+    DEEP_SUPERVISION: false
+    LAMBDA_MATCH:     1.0
+  LG_V2:
+    FFN_EXPANSION:    4
+
+FEATURE_MATCHER:
+  TYPE: Sinkhorn
+  SINKHORN:
+    NUM_IT: 50
+    DUSTBIN_SCORE_INIT: 1.0
+
+DATASET:
+  METADATA_PATH: /mnt/vol1/datasets/ScanNet++/scannetpp_processed/all_metadata.npz
+  DATA_ROOT:     /mnt/vol1/datasets/ScanNet++/scannetpp_processed
+  SEGDATA_ROOT:  /mnt/vol1/datasets/ScanNet++/masks_resize_mast3r
+  PAIRS_ROOT:    /mnt/vol1/datasets/ScanNet++/masks_resize_mast3r_res
+  HEIGHT: 336
+  WIDTH:  512
+  RESIZE_MODE: square
+  VAL_FRACTION: 0.1
+  PAIR_DSC_ROOT: ""                       # must be empty — DPT fusion is online-only
+
+TRAINING:
+  BATCH_SIZE:      20        # reduced vs single-layer — fusion convs + 4 layer activations use more VRAM
+  NUM_WORKERS:     8
+  PREFETCH_FACTOR: 1
+  LR:              0.0001
+  WEIGHT_DECAY:    0.0001
+  EPOCHS:          5
+  GRAD_CLIP:       1.0
+  LR_SCHEDULER:    cosine
+  WARMUP_STEPS:    500
+  LOG_INTERVAL:    100
+  VAL_INTERVAL:    5000
+  VAL_MAX_BATCHES: 200
+  SAVE_INTERVAL:   7000
+
+DEBUG: false
+SAVE_DIR: results/segvggt_dpt
+RESUME:   null
+
+ACCELERATE:
+  MIXED_PRECISION: bf16

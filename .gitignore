@@ -47,23 +47,34 @@ dist/
 # ---- Datasets and run outputs ----
 # Dataset roots are configured, not vendored (see docs/installation.md).
 /data/
+/data
 /datasets/
+/datasets
 results/
+results
 outputs/
 logs/
 *.log
 
 # ---- Third-party working trees, populated by setup_third_party.sh ----
 /third_party/segmast3r/
+/third_party/segmast3r
 /third_party/vggt/
+/third_party/vggt
 /third_party/concept-graphs/
+/third_party/concept-graphs
 /third_party/habitat-sim/
+/third_party/habitat-sim
 /downstream/topological_navigation/object-rel-nav/
+/downstream/topological_navigation/object-rel-nav
 
 # ---- Demo artifacts (videos and caches are hosted, not committed) ----
 /demo/output/
 *.mp4
 *.gif
+
+# Trailing-slash patterns above are paired with slashless twins so that a
+# symlinked dependency or dataset is ignored too.
 
 # NOTE: *.csv / *.tsv are deliberately NOT ignored. The downstream navigation
 # statistics read per_episode_metrics.csv, which a global rule would swallow.

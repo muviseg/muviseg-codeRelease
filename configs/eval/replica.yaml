@@ -1,0 +1,34 @@
+DATASET:
+  DATA_ROOT: /mnt/vol0/home/dennis/nabo-dataset-mounted/semantic-replica
+  DATA_SOURCE: Replica
+  SCENES: ['office_0', 'office_1', 'office_2', 'office_3', 'office_4',
+           'room_0', 'room_1', 'room_2']
+  SEQUENCE: Sequence_1
+  HEIGHT: 336
+  WIDTH: 512
+  RESIZE_H: 336
+  RESIZE_W: 512
+  M_PRIME: 50  # Max number of masks to keep per image
+  INSTANCE_MASK_ROOT: /mnt/vol0/home/dennis/nabo-dataset-mounted/semantic-replica/Replica_Instance_Segmentation
+
+EVAL:
+  PAIRS_FILE: pairs_replica_3200.json
+  POSE_BINS: [[0, 45], [45, 90], [90, 135], [135, 180]]
+  BATCH_SIZE: 1
+  NUM_WORKERS: 4
+  TEMPORAL_GAP_MIN: 5
+  NUM_PAIRS_PER_SCENE: 400
+  OUTPUT_DIR: results/replica_table2
+
+MODEL:
+  CHECKPOINT: checkpoints/segmast3r_spp.ckpt
+  TYPE: MASt3RSegFeat
+
+FEATURE_MATCHER:
+  TYPE: Sinkhorn
+  SINKHORN:
+    DUSTBIN_SCORE_INIT: 5.3937
+    NUM_IT: 50
+
+RANDOM_SEED: 42
+DEBUG: false

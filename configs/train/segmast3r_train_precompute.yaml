@@ -1,0 +1,41 @@
+MODEL:
+  MAST3R_CKPT: /home/denis_fatykhov/Projects/segmast3r/mast3r_src/MASt3R_ViTLarge_BaseDecoder_512_catmlpdpt_metric.pth
+  ARCH: sinkhorn
+
+FEATURE_MATCHER:
+  TYPE: Sinkhorn
+  SINKHORN:
+    NUM_IT: 50
+    DUSTBIN_SCORE_INIT: 1.0
+
+DATASET:
+  METADATA_PATH: /mnt/vol1/datasets/ScanNet++/scannetpp_processed/all_metadata.npz
+  DATA_ROOT:     /mnt/vol1/datasets/ScanNet++/scannetpp_processed
+  SEGDATA_ROOT:  /mnt/vol1/datasets/ScanNet++/masks_resize_mast3r
+  PAIRS_ROOT:    /mnt/vol1/datasets/ScanNet++/masks_resize_mast3r_res
+  HEIGHT: 336
+  WIDTH:  512
+  RESIZE_MODE: square
+  VAL_FRACTION: 0.02
+  PAIR_DSC_ROOT: /mnt/vol1/datasets/ScanNet++/segmast3r_pair_dsc
+
+TRAINING:
+  BATCH_SIZE:      256
+  NUM_WORKERS:     4
+  PREFETCH_FACTOR: 1
+  LR:              0.0001
+  WEIGHT_DECAY:    0.0001
+  EPOCHS:          5
+  GRAD_CLIP:       1.0
+  LR_SCHEDULER:    cosine
+  WARMUP_STEPS:    500
+  LOG_INTERVAL:    100
+  VAL_INTERVAL:    5000
+  SAVE_INTERVAL:   7000
+
+DEBUG: false
+SAVE_DIR: results/segmast3r_sinkhorn_precompute-001
+RESUME:   null
+
+ACCELERATE:
+  MIXED_PRECISION: bf16

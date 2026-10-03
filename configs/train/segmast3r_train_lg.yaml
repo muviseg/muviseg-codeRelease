@@ -1,0 +1,48 @@
+MODEL:
+  MAST3R_CKPT: /home/denis_fatykhov/Projects/segmast3r/mast3r_src/MASt3R_ViTLarge_BaseDecoder_512_catmlpdpt_metric.pth
+  ARCH: lightglue
+  LG:
+    PROJ_DIM:         128
+    N_LAYERS:         3
+    N_HEADS:          4
+    GRAD_CHECKPOINT:  false
+    DEEP_SUPERVISION: false
+    LAMBDA_MATCH:     1.0
+
+FEATURE_MATCHER:
+  TYPE: Sinkhorn
+  SINKHORN:
+    NUM_IT: 50
+    DUSTBIN_SCORE_INIT: 1.0
+
+DATASET:
+  METADATA_PATH: /mnt/vol1/datasets/ScanNet++/scannetpp_processed/all_metadata.npz
+  DATA_ROOT:     /mnt/vol1/datasets/ScanNet++/scannetpp_processed
+  SEGDATA_ROOT:  /mnt/vol1/datasets/ScanNet++/masks_resize_mast3r
+  PAIRS_ROOT:    /mnt/vol1/datasets/ScanNet++/masks_resize_mast3r_res
+  HEIGHT: 336
+  WIDTH:  512
+  RESIZE_MODE: square
+  VAL_FRACTION: 0.02
+  PAIR_DSC_ROOT: ""  # set to per-pair precompute path when ready
+
+TRAINING:
+  BATCH_SIZE:      32
+  NUM_WORKERS:     8
+  PREFETCH_FACTOR: 4
+  LR:              0.0001
+  WEIGHT_DECAY:    0.0001
+  EPOCHS:          5
+  GRAD_CLIP:       1.0       # clip grads for attention layers
+  LR_SCHEDULER:    cosine
+  WARMUP_STEPS:    500
+  LOG_INTERVAL:    100
+  VAL_INTERVAL:    5000
+  SAVE_INTERVAL:   7000
+
+DEBUG: false
+SAVE_DIR: results/segmast3r_lg_precompt
+RESUME:   null
+
+ACCELERATE:
+  MIXED_PRECISION: bf16

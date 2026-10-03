@@ -1,0 +1,39 @@
+DATASET:
+  DATA_ROOT: /mnt/vol0/home/dennis/nabo-dataset-mounted/virtual-KITTI-2
+  DATA_SOURCE: VKITTI2
+  SCENES: ['Scene01', 'Scene02', 'Scene06', 'Scene18', 'Scene20']
+  VARIANTS: ['clone', '15-deg-left', '30-deg-right', 'sunset']
+  HEIGHT: 336
+  WIDTH: 512
+  RESIZE_H: 336
+  RESIZE_W: 512
+  M_PRIME: 50
+
+EVAL:
+  PAIRS_FILE: pairs_vkitti2_4000.json
+  POSE_BINS: [[0, 20], [20, 40], [40, 60], [60, 90]]
+  BATCH_SIZE: 1
+  NUM_WORKERS: 4
+  N_FRAMES: 4
+  CONTEXT_STEP: 5
+  OUTPUT_DIR: results/roma_vkitti2/votes
+
+MODEL:
+  ARCH: roma
+  ROMA_VARIANT: outdoor
+  ROMA_SCORING: votes   # 'votes' is the sparse alternative; see core/roma_infer.py
+  ROMA_NUM_SAMPLES: 5000
+  ROMA_UPSAMPLE: false
+  VGGT_CKPT: ../third_party/vggt_weights.pt
+  LAYER_INDICES: [5, 11, 17, 23]
+  FUSION_DIM: 256
+  PROJ_DIM: 128
+  N_JOINT_LAYERS: 3
+  MAX_FRAMES: 16
+  N_HEADS: 4
+  FFN_EXPANSION: 4
+  MATCHABILITY_BIAS: 0.5
+  TEMPERATURE_INIT: 0.85
+
+RANDOM_SEED: 42
+DEBUG: false

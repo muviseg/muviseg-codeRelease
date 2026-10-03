@@ -1,0 +1,30 @@
+DATASET:
+  DATA_ROOT: /mnt/vol0/home/dennis/nabo-dataset-mounted/virtual-KITTI-2
+  DATA_SOURCE: VKITTI2
+  SCENES: ['Scene01', 'Scene02', 'Scene06', 'Scene18', 'Scene20']
+  VARIANTS: ['clone', '15-deg-left', '30-deg-right', 'sunset']
+  HEIGHT: 336
+  WIDTH: 512
+  RESIZE_H: 336
+  RESIZE_W: 512
+  M_PRIME: 50
+
+EVAL:
+  PAIRS_FILE: pairs_vkitti2_4000.json
+  POSE_BINS: [[0, 20], [20, 40], [40, 60], [60, 90]]
+  BATCH_SIZE: 1
+  NUM_WORKERS: 4
+  OUTPUT_DIR: results/segmast3r_lgv2_vkitti2/best
+
+MODEL:
+  ARCH: lightglue_v2
+  CHECKPOINT: ../results/segmast3r_lg_v2/best.pth
+  MAST3R_CKPT: ../third_party/segmast3r/mast3r_src/MASt3R_ViTLarge_BaseDecoder_512_catmlpdpt_metric.pth
+  PROJ_DIM: 128
+  PROJ_MID_DIM: 64
+  N_LAYERS: 3
+  N_HEADS: 4
+  FFN_EXPANSION: 4
+
+RANDOM_SEED: 42
+DEBUG: false

@@ -1,0 +1,32 @@
+DATASET:
+  DATA_ROOT: /mnt/vol0/home/dennis/nabo-dataset-mounted/semantic-replica
+  DATA_SOURCE: Replica
+  SCENES: ['office_0', 'office_1', 'office_2', 'office_3', 'office_4',
+           'room_0', 'room_1', 'room_2']
+  SEQUENCE: Sequence_1
+  HEIGHT: 336
+  WIDTH: 512
+  RESIZE_H: 336
+  RESIZE_W: 512
+  M_PRIME: 50
+  INSTANCE_MASK_ROOT: /mnt/vol0/home/dennis/nabo-dataset-mounted/semantic-replica/Replica_Instance_Segmentation
+
+EVAL:
+  PAIRS_FILE: pairs_replica_3200.json
+  POSE_BINS: [[0, 45], [45, 90], [90, 135], [135, 180]]
+  BATCH_SIZE: 1
+  NUM_WORKERS: 4
+  OUTPUT_DIR: results/segmast3r_lgv2_replica/best
+
+MODEL:
+  ARCH: lightglue_v2
+  CHECKPOINT: ../results/segmast3r_lg_v2/best.pth
+  MAST3R_CKPT: ../third_party/segmast3r/mast3r_src/MASt3R_ViTLarge_BaseDecoder_512_catmlpdpt_metric.pth
+  PROJ_DIM: 128
+  PROJ_MID_DIM: 64
+  N_LAYERS: 3
+  N_HEADS: 4
+  FFN_EXPANSION: 4
+
+RANDOM_SEED: 42
+DEBUG: false

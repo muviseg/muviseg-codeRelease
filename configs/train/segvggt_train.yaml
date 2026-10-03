@@ -1,0 +1,58 @@
+# SegVGGT training config — VGGT Aggregator backbone + LightGlue head.
+#
+# Precomputed mode is mandatory for VGGT (online forward too expensive).
+# Run precompute_vggt_features.py first, then set DATASET.PAIR_DSC_ROOT.
+
+MODEL:
+  ARCH: vggt
+  VGGT_CKPT: third_party/vggt_weights.pt   # local path or HF id ("facebook/VGGT-1B")
+  VGGT_LAYER_IDX: 23                        # aggregator layer index (0–23)
+  LG:
+    PROJ_DIM:         128
+    N_LAYERS:         3
+    N_HEADS:          4
+    GRAD_CHECKPOINT:  false
+    DEEP_SUPERVISION: false
+    LAMBDA_MATCH:     1.0
+  LG_V2:
+    PROJ_MID_DIM:     256    # MLP projector hidden dim (2048→256→128)
+    FFN_EXPANSION:    4      # 4× FFN
+
+FEATURE_MATCHER:
+  TYPE: Sinkhorn
+  SINKHORN:
+    NUM_IT: 50
+    DUSTBIN_SCORE_INIT: 1.0
+
+DATASET:
+  METADATA_PATH: /mnt/vol1/datasets/ScanNet++/scannetpp_processed/all_metadata.npz
+  DATA_ROOT:     /mnt/vol1/datasets/ScanNet++/scannetpp_processed
+  SEGDATA_ROOT:  /mnt/vol1/datasets/ScanNet++/masks_resize_mast3r
+  PAIRS_ROOT:    /mnt/vol1/datasets/ScanNet++/masks_resize_mast3r_res
+  HEIGHT: 336
+  WIDTH:  512
+  RESIZE_MODE: square
+  VAL_FRACTION: 0.02
+  PAIR_DSC_ROOT: ""  # MUST set to precomputed VGGT descriptor path before training
+
+TRAINING:
+  BATCH_SIZE:      8       # reduced — 2048-dim descriptors are much larger than MASt3R 24-dim
+  NUM_WORKERS:     8
+  PREFETCH_FACTOR: 4
+  LR:              0.0001
+  WEIGHT_DECAY:    0.0001
+  EPOCHS:          5
+  GRAD_CLIP:       1.0
+  LR_SCHEDULER:    cosine
+  WARMUP_STEPS:    500
+  LOG_INTERVAL:    100
+  VAL_INTERVAL:    5000
+  VAL_MAX_BATCHES: 200    # subsample val to ~1600 samples (prevents NCCL timeout with online VGGT)
+  SAVE_INTERVAL:   7000
+
+DEBUG: false
+SAVE_DIR: results/segvggt
+RESUME:   null
+
+ACCELERATE:
+  MIXED_PRECISION: bf16

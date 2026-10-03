@@ -1,0 +1,72 @@
+# SegVGGT-DPT v3 — fix temperature explosion + rebalance loss.
+#
+# Changes vs v2:
+#   - Temperature clamped ≤ 1.0 (code change: tau.clamp(max=1.0))
+#   - LAMBDA_MATCH: 0.3 (was 1.0) — reduce BCE dominance over match_loss
+#   - MATCHABILITY_BIAS: 0.5 (was 0.4)
+#
+# v2 post-mortem:
+#   Temperature grew 1.0→1.13 (smoother scores), dustbin_rate increased
+#   0.72→0.76, model became MORE conservative. Root cause: unmatched segments
+#   outnumber matched ~3:1, so BCE loss dominated and pushed tau up.
+#
+# Usage:
+#   accelerate launch -m training.train --config training/config/segvggt_dpt_train_v3.yaml
+
+MODEL:
+  ARCH: vggt_dpt
+  VGGT_CKPT: third_party/vggt_weights.pt
+  VGGT_LAYER_INDICES: [5, 11, 17, 23]
+  VGGT_FUSION_DIM: 256
+  MATCHABILITY_BIAS: 0.5
+  TEMPERATURE_INIT:  1.0              # clamped ≤ 1.0 in code — can only sharpen
+  LG:
+    PROJ_DIM:         128
+    N_LAYERS:         3
+    N_HEADS:          4
+    GRAD_CHECKPOINT:  false
+    DEEP_SUPERVISION: false
+    LAMBDA_MATCH:     0.3             # was 1.0 — reduce BCE weight so match_loss dominates
+  LG_V2:
+    FFN_EXPANSION:    4
+
+FEATURE_MATCHER:
+  TYPE: Sinkhorn
+  SINKHORN:
+    NUM_IT: 50
+    DUSTBIN_SCORE_INIT: 1.0
+
+DATASET:
+  METADATA_PATH: /mnt/vol2_raid/shared/datasets/ScanNet++/scannetpp_processed/all_metadata.npz
+  DATA_ROOT:     /mnt/vol2_raid/shared/datasets/ScanNet++/scannetpp_processed
+  SEGDATA_ROOT:  /mnt/vol2_raid/shared/datasets/ScanNet++/masks_resize_mast3r
+  PAIRS_ROOT:    /mnt/vol2_raid/shared/datasets/ScanNet++/masks_resize_mast3r_res
+  HEIGHT: 336
+  WIDTH:  512
+  RESIZE_MODE: square
+  VAL_FRACTION: 0.1
+  MAX_PAIRS: 1200000
+  PAIR_DSC_ROOT: ""
+
+TRAINING:
+  BATCH_SIZE:      48
+  NUM_WORKERS:     8
+  PREFETCH_FACTOR: 1
+  LR:              0.0001
+  WEIGHT_DECAY:    0.0001
+  EPOCHS:          5
+  GRAD_CLIP:       1.0
+  LR_SCHEDULER:    cosine
+  WARMUP_STEPS:    500
+  LOG_INTERVAL:    100
+  VAL_INTERVAL:    5000
+  VAL_MAX_BATCHES: 200
+  SAVE_INTERVAL:   7000
+
+DEBUG: false
+SAVE_DIR: results/segvggt_dpt/v3-001
+RESUME:   null
+
+ACCELERATE:
+  MIXED_PRECISION: bf16
+  GRADIENT_ACCUMULATION_STEPS: 2
