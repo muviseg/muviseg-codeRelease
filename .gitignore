@@ -70,6 +70,7 @@ logs/
 
 # ---- Demo artifacts (videos and caches are hosted, not committed) ----
 /demo/output/
+/demo/output
 *.mp4
 *.gif
 
