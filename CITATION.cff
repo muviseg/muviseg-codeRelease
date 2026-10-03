@@ -1,0 +1,59 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the paper below."
+title: "MuViSeg: Multi-View Segment Correspondences from Dense Geometry Priors"
+abstract: >-
+  Given several images of the same scene and class-agnostic segmentation masks
+  for each, MuViSeg predicts which segments correspond to the same physical
+  object. A frozen 3D foundation-model backbone (MASt3R or VGGT) supplies dense
+  descriptors, masked average pooling yields one descriptor per segment, and a
+  lightweight trainable head predicts the assignment with a dustbin for
+  unmatched segments.
+authors:
+  - family-names: Fatykhoph
+    given-names: Denis
+    orcid: "https://orcid.org/0009-0004-3998-1915"
+    affiliation: "Applied AI Institute"
+  - family-names: Akhtyamov
+    given-names: Timur
+    orcid: "https://orcid.org/0000-0003-0877-3318"
+    affiliation: "Applied AI Institute"
+  - family-names: Pakulev
+    given-names: Konstantin
+    orcid: "https://orcid.org/0000-0001-7627-0400"
+    affiliation: "Applied AI Institute"
+  - family-names: Devchich
+    given-names: German
+    orcid: "https://orcid.org/0009-0003-8000-4342"
+    affiliation: "Applied AI Institute"
+  - family-names: Ferrer
+    given-names: Gonzalo
+    orcid: "https://orcid.org/0000-0003-2704-7186"
+    affiliation: "Applied AI Institute"
+license: MIT
+repository-code: "https://github.com/muviseg/muviseg-codeRelease"
+url: "https://muviseg.github.io"
+preferred-citation:
+  type: conference-paper
+  title: "MuViSeg: Multi-View Segment Correspondences from Dense Geometry Priors"
+  year: 2026
+  collection-title: "Proceedings of the Asian Conference on Computer Vision (ACCV)"
+  authors:
+    - family-names: Fatykhoph
+      given-names: Denis
+      orcid: "https://orcid.org/0009-0004-3998-1915"
+    - family-names: Akhtyamov
+      given-names: Timur
+      orcid: "https://orcid.org/0000-0003-0877-3318"
+    - family-names: Pakulev
+      given-names: Konstantin
+      orcid: "https://orcid.org/0000-0001-7627-0400"
+    - family-names: Devchich
+      given-names: German
+      orcid: "https://orcid.org/0009-0003-8000-4342"
+    - family-names: Ferrer
+      given-names: Gonzalo
+      orcid: "https://orcid.org/0000-0003-2704-7186"
+identifiers:
+  - type: other
+    value: "arXiv:2607.17938"
+    description: arXiv preprint
