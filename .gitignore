@@ -1,0 +1,69 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+
+# Environments
+.venv/
+venv/
+env/
+.env
+.python-version
+
+# Tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# Build
+build/
+dist/
+*.egg-info/
+*.eggs/
+
+# Editors
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# ---- Model weights and large artifacts: never commit ----
+# Checkpoints live on OSF; backbones are fetched by setup_third_party.sh.
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.tar
+*.tar.gz
+*.tar.zst
+*.zip
+
+# ---- Datasets and run outputs ----
+# Dataset roots are configured, not vendored (see docs/installation.md).
+/data/
+/datasets/
+results/
+outputs/
+logs/
+*.log
+
+# ---- Third-party working trees, populated by setup_third_party.sh ----
+/third_party/segmast3r/
+/third_party/vggt/
+/third_party/concept-graphs/
+/third_party/habitat-sim/
+/downstream/topological_navigation/object-rel-nav/
+
+# ---- Demo artifacts (videos and caches are hosted, not committed) ----
+/demo/output/
+*.mp4
+*.gif
+
+# NOTE: *.csv / *.tsv are deliberately NOT ignored. The downstream navigation
+# statistics read per_episode_metrics.csv, which a global rule would swallow.
